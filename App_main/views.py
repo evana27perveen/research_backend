@@ -4,9 +4,6 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.decorators import user_passes_test
-
-
-
 from App_auth.models import *
 from App_main.models import *
 from App_main.serializers import *
@@ -28,15 +25,6 @@ def is_reader(user):
     return user.groups.filter(name='READER').exists()
 
 
-def apply_decorator_to_methods(decorator):
-    def decorator_wrapper(cls):
-        for attr in cls.__dict__:
-            if callable(getattr(cls, attr)):
-                setattr(cls, attr, decorator(getattr(cls, attr)))
-        return cls
-    return decorator_wrapper
-
-
 class ResearchPaperViewSet(viewsets.ModelViewSet):
     queryset = ResearchPaperModel.objects.all()
     serializer_class = ResearchPaperSerializer
@@ -44,19 +32,30 @@ class ResearchPaperViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     @user_passes_test(is_researcher)
-    def publish(self, request, pk=None):
-        research_paper = self.get_object()
-        if not research_paper.published:
-            research_paper.published = True
-            research_paper.save()
-            return Response({"status": "Research paper published."}, status=status.HTTP_200_OK)
-        return Response({"status": "Research paper already published."}, status=status.HTTP_400_BAD_REQUEST)
+    def create(self, request, **kwargs):
+        serializer = self.serializer_class(data=request.data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        research_paper = serializer.save(authors=[request.user])
+        return Response({"status": "Successfully Created"}, status=status.HTTP_201_CREATED)
 
-    def perform_create(self, serializer):
-        serializer.save(authors=[self.request.user])
+    def retrieve(self, request, pk, **kwargs):
+        research_paper = ResearchPaperModel.objects.get(pk=pk)
+        serializer = self.serializer_class(research_paper)
+        return Response(serializer.data)
 
-    def perform_update(self, serializer):
-        serializer.save(authors=[self.request.user])
+    @user_passes_test(is_researcher)
+    def update(self, request, pk, **kwargs):
+        research_paper = ResearchPaperModel.objects.get(pk=pk)
+        serializer = self.serializer_class(research_paper, data=request.data, partial=True, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        research_paper = serializer.save()
+        return Response({"status": "Successfully Updated!"})
+
+    @user_passes_test(is_researcher)
+    def destroy(self, request, pk, **kwargs):
+        research_paper = ResearchPaperModel.objects.get(pk=pk)
+        research_paper.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -66,3 +65,5 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+
