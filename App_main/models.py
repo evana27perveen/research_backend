@@ -2,7 +2,7 @@ from django.db import models
 from App_auth.models import *
 
 
-class ResearchPaper(models.Model):
+class ResearchPaperModel(models.Model):
     STATUS_CHOICES = (
         ('pending', 'Pending'),
         ('rejected', 'Rejected'),
@@ -10,9 +10,9 @@ class ResearchPaper(models.Model):
     )
 
     title = models.CharField(max_length=255)
-    authors = models.ManyToManyField('ProfileModel')
+    authors = models.ManyToManyField(ProfileModel)
     abstract = models.TextField()
-    publication_date = models.DateField()
+    publication_date = models.DateField(auto_now_add=True)
     file = models.FileField(upload_to='research_papers/')
     published = models.BooleanField(default=False)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
@@ -21,9 +21,9 @@ class ResearchPaper(models.Model):
         return f"{self.title} - ({self.status})"
 
 
-class Comment(models.Model):
-    research_paper = models.ForeignKey(ResearchPaper, on_delete=models.CASCADE, related_name='comments')
-    author = models.ForeignKey('CustomUser', on_delete=models.CASCADE)
+class CommentModel(models.Model):
+    research_paper = models.ForeignKey(ResearchPaperModel, on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 

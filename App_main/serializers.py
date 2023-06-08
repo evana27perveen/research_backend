@@ -1,12 +1,12 @@
 from rest_framework import serializers
-from App_main.models import ResearchPaper, Comment
+from App_main.models import ResearchPaperModel, CommentModel
 
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.StringRelatedField()
 
     class Meta:
-        model = Comment
+        model = CommentModel
         fields = '__all__'
 
 
@@ -15,5 +15,5 @@ class ResearchPaperSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
 
     class Meta:
-        model = ResearchPaper
+        model = ResearchPaperModel
         fields = '__all__'

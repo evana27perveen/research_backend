@@ -1,9 +1,11 @@
-from rest_framework import viewsets, permissions, generics
 from rest_framework.response import Response
-from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework.views import APIView
-from django.contrib.auth.decorators import login_required, user_passes_test
+
+from rest_framework import viewsets, permissions, status
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.decorators import user_passes_test
+
+
 
 from App_auth.models import *
 from App_main.models import *
@@ -35,11 +37,20 @@ def apply_decorator_to_methods(decorator):
     return decorator_wrapper
 
 
-@apply_decorator_to_methods(user_passes_test(is_researcher))
 class ResearchPaperViewSet(viewsets.ModelViewSet):
-    queryset = ResearchPaper.objects.all()
+    queryset = ResearchPaperModel.objects.all()
     serializer_class = ResearchPaperSerializer
     permission_classes = [IsAuthenticated]
+
+    @action(detail=True, methods=['post'])
+    @user_passes_test(is_researcher)
+    def publish(self, request, pk=None):
+        research_paper = self.get_object()
+        if not research_paper.published:
+            research_paper.published = True
+            research_paper.save()
+            return Response({"status": "Research paper published."}, status=status.HTTP_200_OK)
+        return Response({"status": "Research paper already published."}, status=status.HTTP_400_BAD_REQUEST)
 
     def perform_create(self, serializer):
         serializer.save(authors=[self.request.user])
@@ -49,7 +60,7 @@ class ResearchPaperViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
+    queryset = CommentModel.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]
 
