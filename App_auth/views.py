@@ -70,32 +70,32 @@ class AdminProfileViewSet(viewsets.ModelViewSet):
     def create(self, request, **kwargs):
         serializer = self.serializer_class(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
-        patient_profile = serializer.save()
+        profile = serializer.save()
         return Response({"status": "Successfully Created"}, status=201)
 
     def retrieve(self, request, pk, **kwargs):
-        patient_profile = AdminProfileModel.objects.get(pk=pk)
-        serializer = self.serializer_class(patient_profile)
+        profile = AdminProfileModel.objects.get(pk=pk)
+        serializer = self.serializer_class(profile)
         return Response(serializer.data)
 
     def update(self, request, pk, **kwargs):
-        patient_profile = AdminProfileModel.objects.get(pk=pk)
-        serializer = self.serializer_class(patient_profile, data=request.data, context={'request': request})
+        profile = AdminProfileModel.objects.get(pk=pk)
+        serializer = self.serializer_class(profile, data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
-        patient_profile = serializer.save()
+        profile = serializer.save()
         return Response({"status": "Successfully Updated!"})
 
     def destroy(self, request, pk, **kwargs):
-        patient_profile = AdminProfileModel.objects.get(pk=pk)
-        patient_profile.delete()
+        profile = AdminProfileModel.objects.get(pk=pk)
+        profile.delete()
         return Response(status=204)
 
     def patch(self, request, pk, **kwargs):
-        patient_profile = AdminProfileModel.objects.get(pk=pk)
-        serializer = self.serializer_class(patient_profile, data=request.data, partial=True,
+        profile = AdminProfileModel.objects.get(pk=pk)
+        serializer = self.serializer_class(profile, data=request.data, partial=True,
                                            context={'request': request})
         serializer.is_valid(raise_exception=True)
-        patient_profile = serializer.save()
+        profile = serializer.save()
         return Response({"status": "Successfully Updated!"})
 
 
@@ -107,33 +107,34 @@ class ResearcherProfileViewSet(viewsets.ModelViewSet):
     def create(self, request, **kwargs):
         serializer = self.serializer_class(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
-        patient_profile = serializer.save()
+        profile = serializer.save()
         return Response({"status": "Successfully Created"}, status=201)
 
     def retrieve(self, request, pk, **kwargs):
-        patient_profile = ResearcherProfileModel.objects.get(pk=pk)
-        serializer = self.serializer_class(patient_profile)
+        profile = ResearcherProfileModel.objects.get(pk=pk)
+        serializer = self.serializer_class(profile)
         return Response(serializer.data)
 
     def update(self, request, pk, **kwargs):
-        patient_profile = ResearcherProfileModel.objects.get(pk=pk)
-        serializer = self.serializer_class(patient_profile, data=request.data, context={'request': request})
+        profile = ResearcherProfileModel.objects.get(pk=pk)
+        serializer = self.serializer_class(profile, data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
-        patient_profile = serializer.save()
+        profile = serializer.save()
         return Response({"status": "Successfully Updated!"})
 
     def destroy(self, request, pk, **kwargs):
-        patient_profile = ResearcherProfileModel.objects.get(pk=pk)
-        patient_profile.delete()
+        profile = ResearcherProfileModel.objects.get(pk=pk)
+        profile.delete()
         return Response(status=204)
 
     def patch(self, request, pk, **kwargs):
-        patient_profile = ResearcherProfileModel.objects.get(pk=pk)
-        serializer = self.serializer_class(patient_profile, data=request.data, partial=True,
+        profile = ResearcherProfileModel.objects.get(pk=pk)
+        serializer = self.serializer_class(profile, data=request.data, partial=True,
                                            context={'request': request})
         serializer.is_valid(raise_exception=True)
-        patient_profile = serializer.save()
+        profile = serializer.save()
         return Response({"status": "Successfully Updated!"})
+
 
 
 class ReviewerProfileViewSet(viewsets.ModelViewSet):
@@ -144,34 +145,33 @@ class ReviewerProfileViewSet(viewsets.ModelViewSet):
     def create(self, request, **kwargs):
         serializer = self.serializer_class(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
-        patient_profile = serializer.save()
+        profile = serializer.save()
         return Response({"status": "Successfully Created"}, status=201)
 
     def retrieve(self, request, pk, **kwargs):
-        patient_profile = ReviewerProfileModel.objects.get(pk=pk)
-        serializer = self.serializer_class(patient_profile)
+        profile = ReviewerProfileModel.objects.get(pk=pk)
+        serializer = self.serializer_class(profile)
         return Response(serializer.data)
 
     def update(self, request, pk, **kwargs):
-        patient_profile = AdminProfileModel.objects.get(pk=pk)
-        serializer = self.serializer_class(patient_profile, data=request.data, context={'request': request})
+        profile = ReviewerProfileModel.objects.get(pk=pk)
+        serializer = self.serializer_class(profile, data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
-        patient_profile = serializer.save()
+        profile = serializer.save()
         return Response({"status": "Successfully Updated!"})
 
     def destroy(self, request, pk, **kwargs):
-        patient_profile = ReviewerProfileModel.objects.get(pk=pk)
-        patient_profile.delete()
+        profile = ReviewerProfileModel.objects.get(pk=pk)
+        profile.delete()
         return Response(status=204)
 
     def patch(self, request, pk, **kwargs):
-        patient_profile = ReviewerProfileModel.objects.get(pk=pk)
-        serializer = self.serializer_class(patient_profile, data=request.data, partial=True,
+        profile = ReviewerProfileModel.objects.get(pk=pk)
+        serializer = self.serializer_class(profile, data=request.data, partial=True,
                                            context={'request': request})
         serializer.is_valid(raise_exception=True)
-        patient_profile = serializer.save()
+        profile = serializer.save()
         return Response({"status": "Successfully Updated!"})
-
 
 
 class ReaderProfileViewSet(viewsets.ModelViewSet):
@@ -182,30 +182,31 @@ class ReaderProfileViewSet(viewsets.ModelViewSet):
     def create(self, request, **kwargs):
         serializer = self.serializer_class(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
-        patient_profile = serializer.save()
+        profile = serializer.save()
         return Response({"status": "Successfully Created"}, status=201)
 
     def retrieve(self, request, pk, **kwargs):
-        patient_profile = ReaderProfileModel.objects.get(pk=pk)
-        serializer = self.serializer_class(patient_profile)
+        profile = ReaderProfileModel.objects.get(pk=pk)
+        serializer = self.serializer_class(profile)
         return Response(serializer.data)
 
     def update(self, request, pk, **kwargs):
-        patient_profile = AdminProfileModel.objects.get(pk=pk)
-        serializer = self.serializer_class(patient_profile, data=request.data, context={'request': request})
+        profile = ReaderProfileModel.objects.get(pk=pk)
+        serializer = self.serializer_class(profile, data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
-        patient_profile = serializer.save()
+        profile = serializer.save()
         return Response({"status": "Successfully Updated!"})
 
     def destroy(self, request, pk, **kwargs):
-        patient_profile = ReaderProfileModel.objects.get(pk=pk)
-        patient_profile.delete()
+        profile = ReaderProfileModel.objects.get(pk=pk)
+        profile.delete()
         return Response(status=204)
 
     def patch(self, request, pk, **kwargs):
-        patient_profile = ReaderProfileModel.objects.get(pk=pk)
-        serializer = self.serializer_class(patient_profile, data=request.data, partial=True,
+        profile = ReaderProfileModel.objects.get(pk=pk)
+        serializer = self.serializer_class(profile, data=request.data, partial=True,
                                            context={'request': request})
         serializer.is_valid(raise_exception=True)
-        patient_profile = serializer.save()
+        profile = serializer.save()
         return Response({"status": "Successfully Updated!"})
+
