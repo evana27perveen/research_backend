@@ -43,10 +43,10 @@ class ResearchPaperViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(research_paper)
         return Response(serializer.data)
 
-    @user_passes_test(is_researcher)
     def update(self, request, pk, **kwargs):
         research_paper = ResearchPaperModel.objects.get(pk=pk)
-        serializer = self.serializer_class(research_paper, data=request.data, partial=True, context={"request": request})
+        serializer = self.serializer_class(research_paper, data=request.data, partial=True,
+                                           context={"request": request})
         serializer.is_valid(raise_exception=True)
         research_paper = serializer.save()
         return Response({"status": "Successfully Updated!"})

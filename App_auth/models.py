@@ -2,6 +2,9 @@ import re
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+from django_countries.fields import CountryField
+from django_countries import countries
+
 
 
 class UserManager(BaseUserManager):
@@ -50,22 +53,86 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return self.username
 
 
-class ProfileModel(models.Model):
+class AdminProfileModel(models.Model):
     GENDER_OPTION = (
         ('M', 'M'),
         ('F', 'F'),
         ('O', 'O'),
     )
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_query_name="User_profile")
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_query_name="admin_profile")
     full_name = models.CharField(max_length=255)
     gender = models.CharField(max_length=1, choices=GENDER_OPTION)
-    dob = models.DateField()
-    email = models.EmailField(blank=True)
     phone_regex = RegexValidator(
         regex=r'^\+?880\d{10}$',
         message="Phone number must be entered in the format: '+880xxxxxxxxxx'."
     )
     phone_number = models.CharField(validators=[phone_regex], blank=True, max_length=15)
+
+    def __str__(self):
+        return self.full_name
+
+
+class ResearcherProfileModel(models.Model):
+    GENDER_OPTION = (
+        ('M', 'M'),
+        ('F', 'F'),
+        ('O', 'O'),
+    )
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_query_name="researcher_profile")
+    full_name = models.CharField(max_length=255)
+    gender = models.CharField(max_length=1, choices=GENDER_OPTION)
+    phone_regex = RegexValidator(
+        regex=r'^\+?880\d{10}$',
+        message="Phone number must be entered in the format: '+880xxxxxxxxxx'."
+    )
+    phone_number = models.CharField(validators=[phone_regex], max_length=15)
+    institute = models.CharField(max_length=100)
+    address = models.CharField(max_length=255)
+    country = CountryField(choices=list(countries))
+
+    def __str__(self):
+        return self.full_name
+
+
+class ReaderProfileModel(models.Model):
+    GENDER_OPTION = (
+        ('M', 'M'),
+        ('F', 'F'),
+        ('O', 'O'),
+    )
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_query_name="reader_profile")
+    full_name = models.CharField(max_length=255)
+    gender = models.CharField(max_length=1, choices=GENDER_OPTION)
+    phone_regex = RegexValidator(
+        regex=r'^\+?880\d{10}$',
+        message="Phone number must be entered in the format: '+880xxxxxxxxxx'."
+    )
+    phone_number = models.CharField(validators=[phone_regex], max_length=15)
+    institute = models.CharField(max_length=100)
+    address = models.CharField(max_length=255)
+    country = CountryField(choices=list(countries))
+
+    def __str__(self):
+        return self.full_name
+
+
+class ReviewerProfileModel(models.Model):
+    GENDER_OPTION = (
+        ('M', 'M'),
+        ('F', 'F'),
+        ('O', 'O'),
+    )
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_query_name="reviewer_profile")
+    full_name = models.CharField(max_length=255)
+    gender = models.CharField(max_length=1, choices=GENDER_OPTION)
+    phone_regex = RegexValidator(
+        regex=r'^\+?880\d{10}$',
+        message="Phone number must be entered in the format: '+880xxxxxxxxxx'."
+    )
+    phone_number = models.CharField(validators=[phone_regex], max_length=15)
+    institute = models.CharField(max_length=100)
+    address = models.CharField(max_length=255)
+    country = CountryField(choices=list(countries))
 
     def __str__(self):
         return self.full_name

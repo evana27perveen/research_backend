@@ -1,6 +1,6 @@
 from django.contrib.auth.models import Group
 from rest_framework import serializers
-from App_auth.models import CustomUser, ProfileModel
+from App_auth.models import *
 
 
 class UserSerializers(serializers.ModelSerializer):
@@ -27,9 +27,33 @@ class UserSerializers(serializers.ModelSerializer):
         return user
 
 
-class ProfileModelSerializer(serializers.ModelSerializer):
+class AdminProfileModelSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
-        model = ProfileModel
+        model = AdminProfileModel
+        fields = '__all__'
+
+
+class ResearcherProfileModelSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = ResearcherProfileModel
+        fields = '__all__'
+
+
+class ReviewerProfileModelSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = ReviewerProfileModel
+        fields = '__all__'
+
+
+class ReaderProfileModelSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = ReaderProfileModel
         fields = '__all__'
