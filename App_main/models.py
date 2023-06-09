@@ -13,7 +13,7 @@ class ResearchPaperModel(models.Model):
     )
     authors = models.ManyToManyField(ResearcherProfileModel)
     title = models.CharField(max_length=255)
-    Topic = models.TextField()
+    Topic = models.CharField(max_length=255)
     file = models.FileField(upload_to='research_papers/')
     citation = models.TextField()
     publication_date = models.DateField(auto_now_add=True)

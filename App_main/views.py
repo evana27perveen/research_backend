@@ -28,33 +28,40 @@ def is_reader(user):
 class ResearchPaperViewSet(viewsets.ModelViewSet):
     queryset = ResearchPaperModel.objects.all()
     serializer_class = ResearchPaperSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
-    @action(detail=True, methods=['post'])
-    @user_passes_test(is_researcher)
-    def create(self, request, **kwargs):
-        serializer = self.serializer_class(data=request.data, context={"request": request})
+    def create(self, request, *args, **kwargs):
+        author_ids = request.data.get('authors')
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        research_paper = serializer.save(authors=[request.user])
-        return Response({"status": "Successfully Created"}, status=status.HTTP_201_CREATED)
+        self.perform_create(serializer, author_ids)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    def retrieve(self, request, pk, **kwargs):
-        research_paper = ResearchPaperModel.objects.get(pk=pk)
-        serializer = self.serializer_class(research_paper)
+    def perform_create(self, serializer, author_ids):
+        instance = serializer.save()
+        instance.authors.set(author_ids)
+
+    @action(detail=False, methods=['GET'])
+    def custom_action(self, request):
+        return Response("Custom Action")
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
-    def update(self, request, pk, **kwargs):
-        research_paper = ResearchPaperModel.objects.get(pk=pk)
-        serializer = self.serializer_class(research_paper, data=request.data, partial=True,
-                                           context={"request": request})
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
-        research_paper = serializer.save()
-        return Response({"status": "Successfully Updated!"})
+        self.perform_update(serializer)
+        return Response(serializer.data)
 
-    @user_passes_test(is_researcher)
-    def destroy(self, request, pk, **kwargs):
-        research_paper = ResearchPaperModel.objects.get(pk=pk)
-        research_paper.delete()
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
