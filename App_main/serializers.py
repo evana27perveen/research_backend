@@ -12,9 +12,9 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class ResearchPaperSerializer(serializers.ModelSerializer):
-    authors = serializers.PrimaryKeyRelatedField(many=True, queryset=ResearcherProfileModel.objects.all())
-    comments = CommentSerializer(many=True, read_only=True)
-
     class Meta:
         model = ResearchPaperModel
-        fields = '__all__'
+        fields = ('id', 'author', 'title', 'Topic', 'file', 'citation', 'publication_date', 'status')
+        read_only_fields = ('id', 'publication_date')
+
+
