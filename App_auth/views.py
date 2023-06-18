@@ -110,8 +110,8 @@ class ResearcherProfileViewSet(viewsets.ModelViewSet):
         profile = serializer.save()
         return Response({"status": "Successfully Created"}, status=201)
 
-    def retrieve(self, request, pk, **kwargs):
-        profile = ResearcherProfileModel.objects.get(pk=pk)
+    def retrieve(self, request, **kwargs):
+        profile = ResearcherProfileModel.objects.get(user=request.user)
         serializer = self.serializer_class(profile)
         return Response(serializer.data)
 

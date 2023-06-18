@@ -11,7 +11,7 @@ urlpatterns = [
     path('admin-profiles/', AdminProfileViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('admin-profiles/<int:pk>/',
          AdminProfileViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
-    path('researcher-profiles/', ResearcherProfileViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('researcher-profiles/', ResearcherProfileViewSet.as_view({'get': 'retrieve', 'post': 'create'})),
     path('researcher-profiles/<int:pk>/',
          ResearcherProfileViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
     path('reviewer-profiles/', ReviewerProfileViewSet.as_view({'get': 'list', 'post': 'create'})),

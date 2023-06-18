@@ -4,6 +4,8 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.decorators import user_passes_test
+from rest_framework.views import APIView
+
 from App_auth.models import *
 from App_main.models import *
 from App_main.serializers import *
@@ -25,17 +27,24 @@ def is_reader(user):
     return user.groups.filter(name='READER').exists()
 
 
+class UnauthenticatedReadPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if view.action == 'list':
+            return True
+        return request.user and request.user.is_authenticated
+
 class ResearchPaperViewSet(viewsets.ModelViewSet):
     queryset = ResearchPaperModel.objects.all()
     serializer_class = ResearchPaperSerializer
-    permission_classes = [permissions.IsAuthenticated]
+
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
     def create(self, request, *args, **kwargs):
-        request.data["author"] = self.request.user.id
-        serializer = self.get_serializer(data=request.data)
+        data = request.data.copy()
+        data["author"] = self.request.user.id
+        serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
@@ -73,3 +82,8 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
 
+class LatestResearchPapersAPIView(APIView):
+    def get(self, request):
+        latest_papers = ResearchPaperModel.objects.order_by('-publication_date')[:9]
+        serializer = ResearchPaperSerializer(latest_papers, many=True)
+        return Response(serializer.data)
