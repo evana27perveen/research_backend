@@ -18,9 +18,13 @@ class ResearchPaperModel(models.Model):
     citation = models.TextField()
     publication_date = models.DateField(auto_now_add=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='inactive')
+    score = models.CharField(default=0, max_length=20)
 
     def __str__(self):
         return f"{self.title} - ({self.status})"
+
+    class Meta:
+        ordering = ['-publication_date']
 
 
 class CommentModel(models.Model):
@@ -31,3 +35,6 @@ class CommentModel(models.Model):
 
     def __str__(self):
         return f"Comment by {self.author.username} on {self.research_paper.title}"
+
+    class Meta:
+        ordering = ['-created_at']

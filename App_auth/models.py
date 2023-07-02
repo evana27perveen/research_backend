@@ -88,7 +88,7 @@ class ResearcherProfileModel(models.Model):
     phone_number = models.CharField(validators=[phone_regex], max_length=15)
     institute = models.CharField(max_length=100)
     address = models.CharField(max_length=255)
-    country = CountryField(choices=list(countries))
+    country = models.CharField(max_length=255)
 
     def __str__(self):
         return self.full_name
@@ -110,7 +110,7 @@ class ReaderProfileModel(models.Model):
     phone_number = models.CharField(validators=[phone_regex], max_length=15)
     institute = models.CharField(max_length=100)
     address = models.CharField(max_length=255)
-    country = CountryField(choices=list(countries))
+    country = models.CharField(max_length=255)
 
     def __str__(self):
         return self.full_name
@@ -132,7 +132,7 @@ class ReviewerProfileModel(models.Model):
     phone_number = models.CharField(validators=[phone_regex], max_length=15)
     institute = models.CharField(max_length=100)
     address = models.CharField(max_length=255)
-    country = CountryField(choices=list(countries))
+    country = models.CharField(max_length=255)
 
     def __str__(self):
         return self.full_name

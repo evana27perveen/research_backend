@@ -14,7 +14,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class ResearchPaperSerializer(serializers.ModelSerializer):
     class Meta:
         model = ResearchPaperModel
-        fields = ('id', 'author', 'title', 'Topic', 'file', 'citation', 'publication_date', 'status')
+        fields = ('id', 'author', 'title', 'Topic', 'file', 'citation', 'publication_date', 'status', 'score')
         read_only_fields = ('id', 'publication_date')
 
 
