@@ -11,6 +11,8 @@ from App_main.plagiarism_checker import check_single_paper
 from App_main.serializers import *
 from rest_framework.permissions import BasePermission
 
+from django.db.models import Q
+
 
 class IsResearcher(BasePermission):
     def has_permission(self, request, view):
@@ -40,6 +42,7 @@ class UserHomeData(APIView):
         user = request.user
         user_groups = user.groups.all()
         group_names = [group.name for group in user_groups]
+        print(group_names[0])
         if group_names[0] == 'ADMIN':
             profile_exists_or_not = AdminProfileModel.objects.filter(user=user).exists()
         elif group_names[0] == 'RESEARCHER':
@@ -85,12 +88,55 @@ class ResearchPaperViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+
+        # Create a copy of the request data and remove the 'file' field if not provided
+        data = request.data.copy()
+        if 'file' not in data:
+            data.pop('file')
+
+        serializer = self.get_serializer(instance, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
+
         return Response(serializer.data)
+
+    @action(detail=True, methods=['PUT'])
+    def mark_as_reviewed(self, request, pk=None):
+        research_paper = self.get_object()
+        if research_paper.status == 'inactive' or research_paper.status == 'pending':
+            research_paper.status = 'reviewed'
+            research_paper.save()
+            serializer = self.get_serializer(research_paper)
+            return Response(serializer.data)
+        else:
+            return Response({'message': 'Research paper is not in an inactive state.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['PUT'])
+    def mark_as_pending(self, request, pk=None):
+        research_paper = self.get_object()
+        if research_paper.status == 'inactive':
+            research_paper.status = 'pending'
+            research_paper.save()
+            serializer = self.get_serializer(research_paper)
+            return Response(serializer.data)
+        else:
+            return Response({'message': 'Research paper is not in an inactive state.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['PUT'])
+    def mark_as_publish(self, request, pk=None):
+        research_paper = self.get_object()
+        if research_paper.status == 'reviewed':
+            research_paper.status = 'published'
+            research_paper.save()
+            serializer = self.get_serializer(research_paper)
+            return Response(serializer.data)
+        else:
+            return Response({'message': 'Research paper is not in an inactive state.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -117,6 +163,15 @@ class LatestResearchPapersAPIView(APIView):
 class ResearchPapersAPIView(APIView):
     def get(self, request):
         latest_papers = ResearchPaperModel.objects.filter(status='published').order_by('-publication_date')
+        serializer = ResearchPaperSerializer(latest_papers, many=True)
+        return Response({"research_papers": serializer.data})
+
+
+class AllResearchPapersAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        latest_papers = ResearchPaperModel.objects.all().order_by('-publication_date')
         serializer = ResearchPaperSerializer(latest_papers, many=True)
         return Response({"research_papers": serializer.data})
 
@@ -176,3 +231,20 @@ class CheckPlagiarismView(APIView):
         else:
             return Response({'error': 'No file provided.'}, status=400)
 
+
+class ReviewResearchPapersAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsReviewer]
+
+    def get(self, request):
+        research_papers = ResearchPaperModel.objects.filter(Q(status='inactive') | Q(status='pending'))
+        serializer = ResearchPaperSerializer(research_papers, many=True)
+        return Response({"research_papers": serializer.data})
+
+
+class PublishResearchPapersAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        research_papers = ResearchPaperModel.objects.filter(status='reviewed')
+        serializer = ResearchPaperSerializer(research_papers, many=True)
+        return Response({"research_papers": serializer.data})
